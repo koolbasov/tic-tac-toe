@@ -12,61 +12,17 @@ O = "O"
 EMPTY = " "  # константы для заполнения игрового поля
 
 
-def main():
-    """Запускает игру крестики-нолики"""
-    flag = True
-    print("Добро пожаловать в крестики-нолики!")
-    while flag:
-        game_board = get_blanc_board()  # создаем словарь для игры
-        current_player = random.choice([X, O])
-        if current_player == X:
-            print("Вы играете крестиками 'X'")
-            computer_player = O
-        else:
-            print("Вы играете ноликами 'O'")
-            computer_player = X
-
-        while True:
-            print(get_board_str(game_board))  # Отображаем поле на экране
-
-            # спрашиваем игрока про его ход пока он не введет 1-9:
-            move = None
-            while not is_valid_space(game_board, move):
-                print('Выберите ваш ход (1-9), для выхода введите "q"')
-                move = input("> ")
-                if move.lower() == "q":
-                    print("Пока!")
-                    exit()
-            update_board(game_board, move, current_player)  # делаем ход
-
-            # проверяем закончилась ли игра:
-            if is_winner(game_board, current_player):  # проверяем победу
-                print(get_board_str(game_board))
-                print("Вы победили!")
-                break
-            elif is_board_full(game_board):  # проверяем ничью
-                print(get_board_str(game_board))
-                print("Ничья!")
-                break
-            # делаем ход компьютером
-            move = None
-            while not is_valid_space(game_board, move):
-                move = random.choice(ALL_SPACES)
-            update_board(game_board, move, computer_player)
-            # проверяем закончилась ли игра:
-            if is_winner(game_board, computer_player):  # проверяем победу
-                print(get_board_str(game_board))
-                print("Компьютер победил!")
-                break
-            elif is_board_full(game_board):  # проверяем ничью
-                print(get_board_str(game_board))
-                print("Ничья!")
-                break
-        print("Спасибо за игру!")
-        another_game = input("Чтобы сыграть еще раз введите: y > ")
-        if another_game.lower() != "y":
-            flag = False
-            print("Пока!")
+def get_players(X, O):
+    # определяем кто будет играть крестиками
+    current_player = random.choice([X, O])
+    if current_player == X:
+        print("Вы играете крестиками 'X'")
+        computer_player = O
+        return current_player, computer_player
+    else:
+        print("Вы играете ноликами 'O'")
+        computer_player = X
+        return current_player, computer_player
 
 
 def get_blanc_board():
@@ -121,6 +77,73 @@ def is_board_full(board):
 def update_board(board, space, player):
     """Отмечает ход на поле"""
     board[space] = player
+
+
+def get_human_move(board):
+    """спрашиваем игрока его ход пока он не введет 1-9:"""
+    move = None
+    while not is_valid_space(board, move):
+        print('Выберите ваш ход (1-9), для выхода введите "q"')
+        move = input("> ")
+        if move.lower() == "q":
+            print("Пока!")
+            exit()
+    return move
+
+
+def get_computer_move(board):
+    """делает ход компьютером"""
+    for move in ALL_SPACES:
+        board_copy = board.copy()
+        if is_valid_space(board_copy, move):
+            return move
+
+
+def check_game_end(board, current_player):
+    """Возвращает True если игра закончена"""
+    if is_winner(board, current_player):  # проверяем победу
+        print(get_board_str(board))
+        print("Вы победили!")
+    elif is_board_full(board):  # проверяем ничью
+        print(get_board_str(board))
+        print("Ничья!")
+    else:
+        return False
+    return True
+
+
+def main():
+    """Запускает игру крестики-нолики"""
+    flag = True
+    print("Добро пожаловать в крестики-нолики!")
+    while flag:
+        game_board = get_blanc_board()  # создаем словарь для игры
+        # определяем игроков
+        current_player, computer_player = get_players(X, O)
+
+        while True:
+            print(get_board_str(game_board))  # Отображаем поле на экране
+
+            # получаем ход игрока
+            move = get_human_move(game_board)
+            update_board(game_board, move, current_player)  # делаем ход
+
+            # проверяем закончилась ли игра:
+            if check_game_end(game_board, current_player):
+                break
+
+            # получаем ход компьютера
+            move = get_computer_move(game_board)
+            update_board(game_board, move, computer_player)
+
+            # проверяем закончилась ли игра:
+            if check_game_end(game_board, current_player):
+                break
+        print("Спасибо за игру!")
+        another_game = input("Чтобы сыграть еще раз введите: y > ")
+        if another_game.lower() != "y":
+            flag = False
+            print("Пока!")
 
 
 if __name__ == "__main__":

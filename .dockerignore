@@ -1,0 +1,12 @@
+.mypy_cache
+.git
+.gitignore
+.venv
+.DS_Store
+.gitattributes
+.github
+.gitlab-ci.yml
+.idea
+.pre-commit-config.yaml
+.readthedocs.yml
+.ipython

@@ -15,3 +15,7 @@ docker build --tag tic_tac_toe_app .
 ```
 docker run -i tic_tac_toe_app
 ```
+Чтобы скачать собранный докер образ:
+```
+docker pull ghcr.io/koolbasov/tic_tac_toe_app:latest
+```
